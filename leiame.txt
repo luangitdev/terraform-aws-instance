@@ -1,0 +1,8 @@
+#Instalar o pip
+apt install python3-pip
+
+#Instalar o ansible
+pip install ansible
+
+#Executar o comando abaixo para instalar as configurações definidas no playbook do ansible.
+ansible-playbook -i inventory.yml install_docker_ssh.yml --extra-vars "instance_public_ip=18.237.84.221"
