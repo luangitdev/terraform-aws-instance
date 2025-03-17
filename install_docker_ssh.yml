@@ -1,0 +1,34 @@
+- name: Instalar Docker e SSH Server na EC2
+  hosts: ec2_instance
+  become: yes # Equivalente a sudo
+  tasks:
+    - name: Atualizar pacotes
+      yum:
+        name: '*'
+        state: latest
+
+    - name: Instalar Docker
+      shell: |
+        amazon-linux-extras install docker -y
+        systemctl start docker
+        systemctl enable docker
+      args:
+        executable: /bin/bash
+
+    - name: Instalar OpenSSH Server
+      yum:
+        name: openssh-server
+        state: present
+
+    - name: Iniciar e habilitar SSHD
+      systemd:
+        name: sshd
+        state: started
+        enabled: yes
+
+    - name: Criar diretório de volume e iniciar Tomcat
+      shell: |
+        mkdir -p /var/lib/docker/volumes/tomcat_9090/_data
+        docker run -d --name tomcat -p 9090:8080 -v tomcat_9090:/usr/local/tomcat/webapps tomcat:9-jdk17
+      args:
+        executable: /bin/bash
